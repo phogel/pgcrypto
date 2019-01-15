@@ -71,6 +71,16 @@ Installing PGCrypto is pretty simple, but I'm going to give you the TL;DR first 
 
 	And in the migration:
 
+	#### Rails 5 
+	
+		class AddSocialSecurityNumberToUsers < ActiveRecord::Migration
+		  def change
+		    add_column :users, :social_security_number, :bytea
+		  end
+		end
+
+	#### Rails 4 
+	
 		class AddSocialSecurityNumberToUsers < ActiveRecord::Migration
 		  def change
 		    add_column :users, :social_security_number, :binary
