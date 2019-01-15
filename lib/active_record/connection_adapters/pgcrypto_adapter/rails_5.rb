@@ -1,3 +1,10 @@
+class ::PG::Connection # :nodoc:
+  unless self.public_method_defined?(:async_exec_params)
+    remove_method :exec_params
+    alias exec_params async_exec
+  end
+end
+
 module ActiveRecord
   module ConnectionHandling
 
@@ -10,8 +17,9 @@ module ActiveRecord
       conn_params[:user] = conn_params.delete(:username) if conn_params[:username]
       conn_params[:dbname] = conn_params.delete(:database) if conn_params[:database]
 
-      # Forward only valid config params to PGconn.connect.
-      conn_params.keep_if { |k, _| VALID_CONN_PARAMS.include?(k) }
+      # Forward only valid config params
+      valid_conn_param_keys = PG::Connection.conndefaults_hash.keys + [:requiressl]
+      conn_params.slice!(*valid_conn_param_keys)
 
       # The postgres drivers don't allow the creation of an unconnected PGconn object,
       # so just pass a nil connection object for the time being.
